@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#0b1017" />
     <title>SENS LAB · 无畏契约灵敏度识别</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="enhancements.css" />
   </head>
   <body>
     <div class="app-shell">
@@ -56,6 +57,25 @@
               </div>
             </div>
 
+            <div class="setting-group">
+              <div class="setting-heading"><span class="field-label">识别模式</span><span class="setting-caption" id="modeCaption">建议首次使用</span></div>
+              <div class="segmented-control mode-control" id="modeSwitch">
+                <button class="segment active" type="button" data-mode="full">完整识别</button>
+                <button class="segment" type="button" data-mode="speed">速度专项</button>
+                <button class="segment" type="button" data-mode="control">控制专项</button>
+              </div>
+            </div>
+
+            <div class="setting-group difficulty-group">
+              <div class="setting-heading"><span class="field-label">挑战难度</span><span class="setting-caption" id="difficultyCaption">标准参数</span></div>
+              <div class="segmented-control difficulty-control" id="difficultySwitch">
+                <button class="segment active" type="button" data-difficulty="standard"><strong>标准</strong><small>基准</small></button>
+                <button class="segment" type="button" data-difficulty="hard"><strong>困难</strong><small>诱导目标</small></button>
+                <button class="segment" type="button" data-difficulty="pro"><strong>特训</strong><small>极限控制</small></button>
+              </div>
+              <p class="difficulty-note" id="difficultyNote">适合第一次测试，目标大小和速度更接近常规训练。</p>
+            </div>
+
             <button class="primary-button" id="startButton" type="button">
               <span class="button-icon">↗</span>
               <span id="startButtonLabel">开始识别</span>
@@ -84,6 +104,13 @@
             </div>
           </section>
 
+          <section class="panel-block history-block">
+            <div class="section-kicker">RECENT RUNS / 03</div>
+            <div class="history-list" id="historyList">
+              <div class="history-empty">完成一次测试后，这里会保留最近结果。</div>
+            </div>
+          </section>
+
           <section class="panel-block tip-block">
             <div class="tip-icon">✦</div>
             <div>
@@ -109,7 +136,7 @@
           <div class="arena-card" id="arenaCard">
             <div class="arena-toolbar">
               <div class="toolbar-left"><span class="round-tag" id="roundTag">准备阶段</span><span id="roundInstruction">输入你的设置，然后开始识别</span></div>
-              <div class="timer-display" id="timerDisplay">00:00</div>
+              <div class="toolbar-actions"><button class="mini-button hidden" id="pauseButton" type="button">暂停</button><div class="timer-display" id="timerDisplay">00:00</div></div>
             </div>
             <div class="arena-surface" id="arenaSurface">
               <canvas id="aimCanvas"></canvas>
@@ -128,6 +155,12 @@
                 <div class="result-unit">推荐游戏内灵敏度</div>
                 <div class="result-change" id="resultChange">比当前低 8.6%</div>
                 <button class="secondary-button" id="viewResultButton" type="button">查看完整分析 <span>→</span></button>
+              </div>
+              <div class="arena-overlay pause-overlay hidden" id="pauseOverlay">
+                <div class="overlay-kicker">TEST PAUSED</div>
+                <h2>先休息一下</h2>
+                <p>你的计时已经暂停，准备好后继续即可。</p>
+                <button class="secondary-button" id="resumeButton" type="button">继续测试 <span>→</span></button>
               </div>
             </div>
             <div class="arena-footer">
@@ -167,7 +200,7 @@
           <div class="analysis-item"><div class="analysis-heading"><span>跟枪稳定</span><b id="trackScore">—</b></div><div class="bar"><i id="trackBar"></i></div><p id="trackNote">等待测试数据</p></div>
         </div>
         <div class="modal-footer-note"><span>✓</span><p id="recommendationNote">建议先用推荐值打两局，再根据第一感受做 ±0.01 的微调。</p></div>
-        <div class="modal-actions"><button class="primary-button" id="againButton" type="button"><span class="button-icon">↻</span>再测一次<span class="button-arrow">→</span></button></div>
+        <div class="modal-actions"><button class="primary-button" id="againButton" type="button"><span class="button-icon">↻</span>再测一次<span class="button-arrow">→</span></button><button class="secondary-button copy-button" id="copyButton" type="button">复制结果 <span>⌘C</span></button></div>
       </div>
     </div>
 
