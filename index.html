@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1017" />
+    <title>SENS LAB · 无畏契约灵敏度识别</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div>
+            <div class="brand-name">SENS<span>LAB</span></div>
+            <div class="brand-caption">VALORANT AIM CALIBRATION</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="live-status"><i></i><span id="sessionStatus">准备开始</span></div>
+          <button class="ghost-button" id="resetButton" type="button">重置数据</button>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <aside class="control-panel">
+          <section class="panel-block profile-block">
+            <div class="section-kicker">CURRENT BASELINE / 01</div>
+            <h2>先告诉我你的<br /><em>当前设置</em></h2>
+            <p class="muted-copy">测试会以当前灵敏度为基准，自动计算更适合你的调整方向。</p>
+
+            <div class="input-stack">
+              <label class="field-label" for="sensitivityInput">游戏内灵敏度</label>
+              <div class="input-wrap">
+                <input id="sensitivityInput" type="number" value="0.35" min="0.001" max="10" step="0.001" inputmode="decimal" />
+                <span>VAL</span>
+              </div>
+              <label class="field-label" for="dpiInput">鼠标 DPI</label>
+              <div class="input-wrap">
+                <input id="dpiInput" type="number" value="800" min="100" max="32000" step="50" inputmode="numeric" />
+                <span>DPI</span>
+              </div>
+            </div>
+
+            <div class="derived-stats">
+              <div>
+                <span>有效 DPI</span>
+                <strong id="edpiValue">280</strong>
+              </div>
+              <div>
+                <span>约每 360°</span>
+                <strong id="cmValue">46.7 <small>cm</small></strong>
+              </div>
+            </div>
+
+            <button class="primary-button" id="startButton" type="button">
+              <span class="button-icon">↗</span>
+              <span id="startButtonLabel">开始识别</span>
+              <span class="button-arrow">→</span>
+            </button>
+          </section>
+
+          <section class="panel-block rounds-block">
+            <div class="section-kicker">CALIBRATION ROUTE / 02</div>
+            <div class="round-list" id="roundList">
+              <div class="round-item active" data-round="0">
+                <div class="round-index">01</div>
+                <div class="round-copy"><strong>甩枪定位</strong><span>大目标 · 找速度</span></div>
+                <div class="round-state">待测</div>
+              </div>
+              <div class="round-item" data-round="1">
+                <div class="round-index">02</div>
+                <div class="round-copy"><strong>微调校准</strong><span>小目标 · 找控制</span></div>
+                <div class="round-state">锁定</div>
+              </div>
+              <div class="round-item" data-round="2">
+                <div class="round-index">03</div>
+                <div class="round-copy"><strong>跟枪稳定</strong><span>移动目标 · 找节奏</span></div>
+                <div class="round-state">锁定</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel-block tip-block">
+            <div class="tip-icon">✦</div>
+            <div>
+              <strong>测试小提示</strong>
+              <p>保持你平时的握姿和鼠标移动幅度，不要为了追求命中刻意放慢。</p>
+            </div>
+          </section>
+        </aside>
+
+        <section class="workspace">
+          <div class="workspace-header">
+            <div>
+              <div class="section-kicker">PERSONAL AIM PROFILE</div>
+              <h1 id="stageTitle">找到你的 <span>Sweet Spot</span></h1>
+              <p id="stageDescription">用三轮短测试，识别你的速度、控制力和稳定性。</p>
+            </div>
+            <div class="progress-cluster">
+              <div class="progress-label"><span id="progressText">0 / 3</span><span>完成度</span></div>
+              <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+          </div>
+
+          <div class="arena-card" id="arenaCard">
+            <div class="arena-toolbar">
+              <div class="toolbar-left"><span class="round-tag" id="roundTag">准备阶段</span><span id="roundInstruction">输入你的设置，然后开始识别</span></div>
+              <div class="timer-display" id="timerDisplay">00:00</div>
+            </div>
+            <div class="arena-surface" id="arenaSurface">
+              <canvas id="aimCanvas"></canvas>
+              <div class="arena-grid-lines"></div>
+              <div class="arena-overlay intro-overlay" id="introOverlay">
+                <div class="overlay-crosshair"><span></span><i></i></div>
+                <div class="overlay-kicker">READY WHEN YOU ARE</div>
+                <h2>让鼠标回到你的手里</h2>
+                <p>点击左侧「开始识别」，跟随提示完成 3 轮测试。</p>
+                <div class="key-hint"><kbd>CLICK</kbd> 命中目标 <span>·</span> <kbd>HOLD</kbd> 跟住移动目标</div>
+              </div>
+              <div class="arena-overlay result-overlay hidden" id="resultOverlay">
+                <div class="result-orbit"></div>
+                <div class="overlay-kicker">YOUR SWEET SPOT IS READY</div>
+                <div class="result-sens" id="resultSensitivity">0.32</div>
+                <div class="result-unit">推荐游戏内灵敏度</div>
+                <div class="result-change" id="resultChange">比当前低 8.6%</div>
+                <button class="secondary-button" id="viewResultButton" type="button">查看完整分析 <span>→</span></button>
+              </div>
+            </div>
+            <div class="arena-footer">
+              <div class="session-metrics">
+                <div><span>本轮命中</span><strong id="hitsValue">—</strong></div>
+                <div><span>平均反应</span><strong id="reactionValue">—</strong></div>
+                <div><span>控制评分</span><strong id="controlValue">—</strong></div>
+              </div>
+              <div class="mouse-hint" id="mouseHint"><span class="mouse-shape"></span><span>保持自然，不要刻意修正</span></div>
+            </div>
+          </div>
+
+          <div class="insight-strip" id="insightStrip">
+            <div class="insight-icon">◎</div>
+            <div><strong>识别逻辑</strong><span>我们会同时观察「快」和「稳」，推荐结果不是单纯追求更高灵敏度。</span></div>
+            <div class="insight-dots"><i></i><i></i><i></i></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop hidden" id="resultModal">
+      <div class="result-modal" role="dialog" aria-modal="true" aria-labelledby="resultModalTitle">
+        <button class="modal-close" id="closeModal" type="button" aria-label="关闭">×</button>
+        <div class="section-kicker">ANALYSIS COMPLETE / 04</div>
+        <h2 id="resultModalTitle">这就是你的 <em>Sweet Spot</em></h2>
+        <p class="modal-subtitle">基于三轮测试表现，为你找到更适合当前手感的起点。</p>
+        <div class="recommendation-card">
+          <div><span>推荐灵敏度</span><strong id="modalSensitivity">0.32</strong></div>
+          <div class="recommendation-divider"></div>
+          <div><span>调整幅度</span><strong id="modalAdjustment">-8.6%</strong></div>
+          <div class="recommendation-badge" id="modalDirection">更稳</div>
+        </div>
+        <div class="analysis-grid">
+          <div class="analysis-item"><div class="analysis-heading"><span>甩枪速度</span><b id="flickScore">—</b></div><div class="bar"><i id="flickBar"></i></div><p id="flickNote">等待测试数据</p></div>
+          <div class="analysis-item"><div class="analysis-heading"><span>微调控制</span><b id="microScore">—</b></div><div class="bar"><i id="microBar"></i></div><p id="microNote">等待测试数据</p></div>
+          <div class="analysis-item"><div class="analysis-heading"><span>跟枪稳定</span><b id="trackScore">—</b></div><div class="bar"><i id="trackBar"></i></div><p id="trackNote">等待测试数据</p></div>
+        </div>
+        <div class="modal-footer-note"><span>✓</span><p id="recommendationNote">建议先用推荐值打两局，再根据第一感受做 ±0.01 的微调。</p></div>
+        <div class="modal-actions"><button class="primary-button" id="againButton" type="button"><span class="button-icon">↻</span>再测一次<span class="button-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
